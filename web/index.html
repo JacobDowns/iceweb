@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	
+  <title>Flowline Selector</title>
+  <link rel="stylesheet" href="/home/jake/web_data/web/plugins/ui/jquery-ui.css">
+  <link rel="stylesheet" href="/home/jake/web_data/web/plugins/leaflet/leaflet.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type = "text/javascript" src="/home/jake/web_data/web/plugins/jquery.js"></script>
+  <script type = "text/javascript" src="/home/jake/web_data/web/plugins/ui/jquery-ui.js"></script>
+  <script type = "text/javascript" src="/home/jake/web_data/web/plugins/canvasjs.min.js"></script>
+  <script type = "text/javascript" src="/home/jake/web_data/web/plugins/proj4.js"></script> 
+  <script type = "text/javascript" src="/home/jake/web_data/web/plugins/leaflet/leaflet.js"></script>
+  <script type = "text/javascript" src="/home/jake/web_data/web/plugins/Leaflet.Editable.js"></script>
+
+  <script src="/home/jake/web_data/web/plugins/context/jquery.contextMenu.js"></script>
+  <script src="/home/jake/web_data/web/plugins/context/jquery.ui.position.min.js"></script>
+  <link rel="stylesheet" href="/home/jake/web_data/web/plugins/context/jquery.contextMenu.min.css">
+  <script src="https://kit.fontawesome.com/54293ab911.js" crossorigin="anonymous"></script>
+
+  <script type = "text/javascript" src="/home/jake/web_data/web/map.js"></script>
+  <script type = "text/javascript" src="/home/jake/web_data/web/flowline.js"></script>
+  <script type = "text/javascript" src="/home/jake/web_data/web/chart.js"></script>
+
+  <style>
+     html, body {
+     height: 100%;
+     margin: 0;
+     }
+     #map {
+     width: 800px;
+     height: 700px;
+     }
+     .flow-control {
+     padding : 2px;
+     background-color : white;
+     }
+     .center-marker {
+     background-color : red;
+     }
+     .shear-marker {
+     background-color : blue;
+     }
+     .flowline-menu{
+     padding : 5px;
+     }
+     .ui-dialog { z-index: 1000 !important ;}
+  </style>
+
+	
+</head>
+<body>
+<div id='map' style="margin: auto;"></div>
+
+
+
+
+<div id="load-flowline-dialog" title="Load Flowline">
+ <label for="input-file">Specify a file:</label><br>
+ <input type="file" id="flowline-coords-file"><br><br>
+ <label for="checkbox-extend-up">Extend Up</label>
+ <input type="checkbox" name="checkbox-extend-up" id="checkbox-extend-up">
+ <label for="checkbox-extend-down">Extend Down</label>
+ <input type="checkbox" name="checkbox-extend-down" id="checkbox-extend-down">
+</div>
+
+<div id="download-flowline-dialog" title="Download Flowline">
+  <label for="file-name">Flowline Name</label><br>
+  <input type="text" name="flowline-name" id="input-flowline-name" value="flowline" class="text ui-widget-content ui-corner-all"><br><br>
+  <label for="data-resolution">Data Resolution (km)</label><br>
+  <input type="text" name="data-resolution" id="input-data-resolution" value="1" class="text ui-widget-content ui-corner-all"><br>
+</div>
+
+<!--
+<div id="flowline-form" title="Add Flowline">
+  <label for="extend">Extend</label><br>
+  <input type="text" name="lat" id="extend" value="1" class="text ui-widget-content ui-corner-all"><br>
+  <label for="resolution">Resolution</label><br>
+  <input type="text" name="resolution" id="lng" value="1" class="text ui-widget-content ui-corner-all"><br>
+</div>
+-->
+
+
+<div id="chart-container" style="height: 300px; width: 100%;"></div>
+<script type = "text/javascript" src="/home/jake/web_data/web/interface.js"></script>
+
+</body>
+</html>
+
