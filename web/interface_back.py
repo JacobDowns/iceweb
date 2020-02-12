@@ -3,9 +3,18 @@ $(function(){
   // Handle flowline object events
   // =================================================================
 
+  function endFirstFlowline(){
+    flowline.extension.disableEdit(map);
+    index = flowline.lines[0].getLatLngs().length - 1;
+    lat = flowline.lines[0].getLatLngs()[index].lat;
+    lng = flowline.lines[0].getLatLngs()[index].lng;
+    flowline.extension.setLatLngs([[lat, lng]]);
+    flowline.extension.enableEdit(map);
+  }
 
   flowline.markers[0].on('editable:drawing:end', function(){
     drawFlowline(0, function(){
+      endFirstFlowline();
       flowline.markers[1].enableEdit(map).startDrawing();
     });
   });
@@ -25,11 +34,14 @@ $(function(){
 
   flowline.markers[0].on('editable:dragend', function(){
     flowline.lines[0].disableEdit();
-    drawFlowline(0, function(){});
+    drawFlowline(0, function(){
+      endFirstFlowline();
+    });
   });
 
   flowline.lines[0].on('editable:editing', function(){
     $('#chart-container').hide();
+    endFirstFlowline();
   });
 
   flowline.markers[1].on('editable:dragend', function(){
@@ -43,26 +55,32 @@ $(function(){
     plotDisabled = false;
   });
 
-  for(j = 0; j < 3; j++){
+  flowline.extension.on('editable:vertex:ctrlclick', function(){
+    flowline.extension.editor.continueForward();
+  });
 
-    (function(_j){
-      flowline.lines[_j].on('editable:vertex:ctrlclick', function(){
-	flowline.lines[_j].editor.continueForward();
-      });
+  flowline.extension.on('editable:editing', function(){
+    $('#chart-container').hide();
+  });
 
-      flowline.markers[_j].on('dblclick', L.DomEvent.stop).on('dblclick', function(){
-	console.log(flowline.lines[_j]);
-	flowline.lines[_j].toggleEdit();  
-      });
-    })(j);
-    
-  }
+  flowline.markers[0].on('dblclick', L.DomEvent.stop).on('dblclick', function(){
+    flowline.extension.toggleEdit();
+    flowline.lines[0].toggleEdit();
+  });
+
+  flowline.markers[1].on('dblclick', L.DomEvent.stop).on('dblclick', function(){
+    flowline.lines[1].toggleEdit();
+  });
+
+  flowline.markers[2].on('dblclick', L.DomEvent.stop).on('dblclick', function(){
+    flowline.lines[2].toggleEdit();
+  });
 
 
   var plotDisabled = true;
   var downloadDisabled = true;
   menu = $.contextMenu({
-      selector: '#menu-div',
+      selector: '.context-menu',
       trigger: 'left',
       callback: function(key, options) {
         var m = "clicked: " + key;
@@ -95,11 +113,6 @@ $(function(){
           },
           icon: 'fas fa-chart-line'
         },
-	'data' : {
-          name: 'Get Flowline Data',
-          callback: getFlowline,
-          icon: 'fas fa-database'
-        },
       }
   });
 
@@ -114,6 +127,9 @@ $(function(){
       flowline.markers[i].removeFrom(map);
       flowline.lines[i].setLatLngs([[]]);
     }
+
+    flowline.extension.disableEdit();
+    flowline.extension.setLatLngs([[]]);
   }
 
 
@@ -158,15 +174,17 @@ $(function(){
   // Plot width averaged flowline
   function plotFlowline(){
 
-    send_data = {};
+    send_data = {}
     flowline.lines[0].disableEdit();
     flowline.lines[1].disableEdit();
     flowline.lines[2].disableEdit();
-
-    send_data.flowline_coords = {};
-    send_data.flowline_coords[0] = flowline.lines[0].getLatLngs();
-    send_data.flowline_coords[1] = flowline.lines[1].getLatLngs();
-    send_data.flowline_coords[2] = flowline.lines[2].getLatLngs();
+    flowline.extension.disableEdit();
+    send_data.flowline_coords = {}
+    send_data.flowline_coords[0] = flowline.lines[0].getLatLngs()
+    send_data.flowline_coords[1] = flowline.lines[1].getLatLngs()
+    send_data.flowline_coords[2] = flowline.lines[2].getLatLngs()
+    send_data.extension_coords = flowline.extension.getLatLngs()
+    console.log(send_data);
 
     $.getJSON({
       method: 'POST',
@@ -211,31 +229,43 @@ $(function(){
       'Load': function(){
 	reader = new FileReader();
 	reader.onload = function(event){
-	  text = event.target.result;
-	  data = JSON.parse(text);
+	text = event.target.result;
+
+	sendData = {}
+	sendData.file = JSON.parse(text);
+	sendData.extend_down = $('#checkbox-extend-down').prop('checked');
+	sendData.extend_up = $('#checkbox-extend-up').prop('checked');
+	  
+	$.getJSON({
+          method: 'POST',
+          url: "http://127.0.0.1:5000/load_flowline",
+          async: true,
+          data: JSON.stringify(sendData),
+          contentType: 'application/json'
+	})
+        .done( function(json) {
           resetFlowline();
+          flowline.lines[0].disableEdit(map);
+          flowline.lines[0].setLatLngs(json[0]);
 
-	  for(i = 0; i < 3; i++){
-	    console.log(data['coords_y_x'][i]);
-	    flowline.lines[i].setLatLngs(data['coords_y_x'][i]);
+          flowline.extension.disableEdit(map);
+          index = json[0].length - 1;
+          lat = json[0][index][0];
+          lng = json[0][index][1];
+          flowline.extension.setLatLngs([[lat, lng]]);
+          flowline.extension.enableEdit(map);
 
-	    coordsLen = data['coords_y_x'][i].length; 
-	    mid_index = Math.floor(coordsLen / 2);
-            lat = data['coords_y_x'][i][mid_index][0];
-            lng = data['coords_y_x'][i][mid_index][1];
-            flowline.markers[i].setLatLng([lat, lng]);
-            flowline.markers[i].addTo(map);
-
-	    if(i == 0){
-              lat = data['coords_y_x'][i][0][0];
-              lng = data['coords_y_x'][i][0][1];
-              flowline.extension.setLatLngs([[lat, lng]]);
-              flowline.extension.enableEdit(map);
-	    }
-	  }
+          mid_index = Math.floor(json[0].length / 2);
+          lat1 = json[0][mid_index][0]
+          lng1 = json[0][mid_index][1]
+          flowline.markers[0].setLatLng([lat1, lng1]);
+          flowline.markers[0].addTo(map);
 
           flowline.markers[0].enableEdit();
+          flowline.markers[1].enableEdit(map).startDrawing();
           plotDisabled = false;
+	  console.log(json);
+        });
 	}
 	reader.readAsText(flowlineFile);
 	loadFlowlineDialog.dialog('close');
@@ -303,26 +333,5 @@ $(function(){
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
   }
-
-
-  function getFlowline(){
-    send_data = {}
-    send_data['data_res'] = 1.0
-    send_data.coords = {}
-
-    for(i = 0; i < 3; i++){
-      flowline.lines[i].disableEdit();
-      send_data.coords[i] = flowline.lines[i].getLatLngs()
-    }
-    $.getJSON({
-      method: 'POST',
-      url: "http://127.0.0.1:5000/get_flowline_data",
-      async: true,
-      data: JSON.stringify(send_data),
-      contentType: 'application/json'
-    })
-      .done(function(return_data) {
-	console.log(return_data);
-    });
-  }
+  
 });

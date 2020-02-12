@@ -32,11 +32,5 @@ $(function(){
     flowline.lines.push(L.polyline([[]], lineOptions));
     flowline.lines[i].addTo(map);
   }
-
-  flowline.extension = L.polyline([[]], {
-    editorClass : AnchoredPolylineEditor,
-    color : '#ff0000'
-  });
-  flowline.extension.addTo(map);
   
 });

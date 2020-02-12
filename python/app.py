@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for,request
 from flask import make_response, jsonify
 from flask_cors import CORS
 from data_manager import create_datasets
+from flowline_data_manager import *
 from flow_integrator import FlowIntegrator
 from scipy.interpolate import interp1d
 import pandas as pd
@@ -192,8 +193,10 @@ def get_data(data):
     
     for field in fields:
         flowline_data[field] = []
-    for field in ['coords', 'coords_xy', 'L']:
+    for field in ['coords', 'L']:
         return_data[field] = []
+    return_data['coords_y_x'] = []
+        
     
     num_flowlines = len(data['flowline_coords'].keys())
         
@@ -212,14 +215,14 @@ def get_data(data):
         
         if i == 0:
             extend_frame = pd.DataFrame(data['extension_coords'])
-            x_extend = extend_frame['lng'].to_numpy()[::-1]
-            y_extend = extend_frame['lat'].to_numpy()[::-1]
+            x_extend = extend_frame['lng'].to_numpy()
+            y_extend = extend_frame['lat'].to_numpy()
             
             if len(x_extend) > 1:
                 L_extend = get_L(x_extend, y_extend)
-                L = np.concatenate((-L_extend[::-1], L))
-                x = np.concatenate((x_extend[::-1], x))
-                y = np.concatenate((y_extend[::-1], y))
+                L = np.concatenate((-L_extend, L))
+                x = np.concatenate((x_extend, x))
+                y = np.concatenate((y_extend, y))
 
             L0 = L
             
@@ -235,7 +238,7 @@ def get_data(data):
         # Custom map xy coords
         coords_xy = np.c_[x_res, y_res]
         flowline_data['coords_xy'].append(coords_xy)
-        return_data['coords_xy'].append(coords_xy.tolist())
+        return_data['coords_y_x'].append(coords_xy[:,::-1].tolist())
         # epsg:3413 map coords
         map_xs = (x_res - 637.925)*1e3
         map_ys = (y_res - 3348.675)*1e3
@@ -317,7 +320,18 @@ def get_data(data):
     return ''
 """
 
+
+@app.route('/get_flowline_data', methods=['POST'])
+def get_flowline_data():
+    if request.method == 'POST':
+        data = request.json
+        return_data = flowline_data_manager.get_flowline_data(data)
+
+        return return_data
+        
+
 if __name__ == "__main__":
     datasets = create_datasets()
+    flowline_data_manager = FlowlineDataManager(datasets)
     flow_integrator = FlowIntegrator(datasets['VX'], datasets['VY'])
     app.run(debug = True)

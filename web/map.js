@@ -7,11 +7,9 @@ $(function(){
 
   AnchoredPolylineEditor = L.Editable.PolylineEditor.extend({
     addVertexMarker: function (latlng, latlngs, opts) {
-      console.log("asfsd");
       return new this.tools.options.vertexMarkerClass(latlng, latlngs, this, opts || {});
     },
     addVertexMarkers: function (latlngs) {
-      console.log("here");
       for (var i = 0, l = latlngs.length; i < l; i++) {
         this.addVertexMarker(latlngs[i], latlngs, {
           draggable: (i>0)  && (i<l-1)
@@ -34,11 +32,13 @@ $(function(){
   image1 = L.imageOverlay('/home/jake/web_data/web/images/velocity.png', bounds).addTo(map);
   image2 = L.imageOverlay('/home/jake/web_data/web/images/bed.png', bounds).addTo(map);
   image3 = L.imageOverlay('/home/jake/web_data/web/images/surface.png', bounds).addTo(map);
+  image4 = L.imageOverlay('/home/jake/web_data/web/images/thickness.png', bounds).addTo(map);
   map.setView([1350, 700], -2);
 
   baseMaps = {
     'Bed': image2,
     'Surface': image3,
+    'Thickness' : image4,
     'Velocity': image1
   };
 
@@ -55,7 +55,8 @@ $(function(){
       //container = L.DomUtil.create('i', 'leaflet-control leaflet-bar flow-control');
       //container.innerHTML = 'Menu'
       //return container;
-      container = L.DomUtil.create('div', 'leaflet-control menu-control');
+      container = L.DomUtil.create('div', 'leaflet-control leaflet-bar menu-control');
+      container.id = 'menu-div';
       L.DomUtil.create('i', 'context-menu fas fa-bars fa-2x', container);
       return container;
     }
