@@ -3,7 +3,7 @@
 <html>
 <head>
 	
-  <title>Flowline Selector</title>
+  <title>Flowline Tool</title>
   <link rel="stylesheet" href="/home/jake/web_data/web/plugins/ui/jquery-ui.css">
   <link rel="stylesheet" href="/home/jake/web_data/web/plugins/leaflet/leaflet.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,8 +29,8 @@
      margin: 0;
      }
      #map {
-     width: 800px;
-     height: 700px;
+     width: 850px;
+     height: 850px;
      background: black;
      }
      .flow-control {
@@ -57,40 +57,44 @@
 	
 </head>
 <body>
-<div id='map' style="margin: auto;"></div>
+
+  <div id='map' style="margin: auto;"></div>
+
+  <div id="load-flowline-dialog" title="Load Flowline">
+    <label for="input-file">Specify a file:</label><br>
+    <input type="file" id="flowline-coords-file"><br><br>
+  </div>
+
+  <div id="download-flowline-dialog" title="Download Flowline">
+    <label for="file-name">Flowline Name</label><br>
+    <input type="text" name="flowline-name" id="input-flowline-name" value="flowline" class="text ui-widget-content ui-corner-all"><br><br>
+    <label for="data-resolution">Data Resolution (km)</label><br>
+    <input type="text" name="data-resolution" id="input-data-resolution" value="1" class="text ui-widget-content ui-corner-all"><br>
+  </div>
+
+  <div id="chart-accordion" style="height: 450px; width: 850px; margin: auto;">
+    <div>
+        <h3><a href="#">Surface and Bed</a></h3>
+        <div id="surface-chart" style="height: 450px;"></div>
+    </div>
+    <div>
+        <h3><a href="#">Width</a></h3>
+        <div id="width-chart" style="height: 450px;"></div>
+    </div>
+    <div>
+        <h3><a href="#">Surface Mass Balance</a></h3>
+        <div id="smb-chart" style="height: 450px;"></div>
+    </div>
+    <div>
+        <h3><a href="#">Temperature</a></h3>
+        <div id="temp-chart" style="height: 450px;"></div>
+    </div>
+  </div>
+  
+  <script type = "text/javascript" src="/home/jake/web_data/web/interface.js"></script>
 
 
-
-
-<div id="load-flowline-dialog" title="Load Flowline">
- <label for="input-file">Specify a file:</label><br>
- <input type="file" id="flowline-coords-file"><br><br>
- <!--<label for="checkbox-extend-up">Extend Up</label>
- <input type="checkbox" name="checkbox-extend-up" id="checkbox-extend-up">
- <label for="checkbox-extend-down">Extend Down</label>
- <input type="checkbox" name="checkbox-extend-down" id="checkbox-extend-down">-->
-</div>
-
-<div id="download-flowline-dialog" title="Download Flowline">
-  <label for="file-name">Flowline Name</label><br>
-  <input type="text" name="flowline-name" id="input-flowline-name" value="flowline" class="text ui-widget-content ui-corner-all"><br><br>
-  <label for="data-resolution">Data Resolution (km)</label><br>
-  <input type="text" name="data-resolution" id="input-data-resolution" value="1" class="text ui-widget-content ui-corner-all"><br>
-</div>
-
-<!--
-<div id="flowline-form" title="Add Flowline">
-  <label for="extend">Extend</label><br>
-  <input type="text" name="lat" id="extend" value="1" class="text ui-widget-content ui-corner-all"><br>
-  <label for="resolution">Resolution</label><br>
-  <input type="text" name="resolution" id="lng" value="1" class="text ui-widget-content ui-corner-all"><br>
-</div>
--->
-
-
-<div id="chart-container" style="height: 300px; width: 100%;"></div>
-<script type = "text/javascript" src="/home/jake/web_data/web/interface.js"></script>
-
+  
 </body>
 </html>
 

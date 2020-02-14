@@ -29,8 +29,8 @@ def create_datasets(fileName = '/home/jake/web_data/data/GreenlandData.h5'):
     velocity = Dataset('velocity',fileName, x, y)
     datasetDict['velocity'] = velocity
 
-    #smb = Dataset('smb',fileName, x, y)
-    #datasetDict['smb'] = smb
+    smb = Dataset('smb',fileName, x, y)
+    datasetDict['smb'] = smb
 
     bed = Dataset('bed',fileName, x, y)
     datasetDict['bed'] = bed
@@ -41,8 +41,8 @@ def create_datasets(fileName = '/home/jake/web_data/data/GreenlandData.h5'):
     thickness = Dataset('thickness',fileName, x, y)
     datasetDict['thickness'] = thickness
 
-    #t2m = Dataset('t2m',fileName, x, y)
-    #datasetDict['t2m'] = t2m
+    t2m = Dataset('t2m',fileName, x, y)
+    datasetDict['t2m'] = t2m
 
     datasetDict['VX'] = Dataset('VX',fileName, x, y)
     datasetDict['VY'] = Dataset('VY',fileName, x, y)
